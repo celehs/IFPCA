@@ -43,14 +43,14 @@ Code <- bind_rows(
 
 ``` r
 fu_time <- Code %>% select(split, id, fu_time) %>% distinct()
-write_csv(fu_time %>% filter(split == "Train"), "demo/long/fu_time_train.csv")
-write_csv(fu_time %>% filter(split == "Valid"), "demo/long/fu_time_valid.csv")
+write_csv(fu_time %>% filter(split == "Train"), "demo/follow_up_train.csv")
+write_csv(fu_time %>% filter(split == "Valid"), "demo/follow_up_valid.csv")
 ```
 
 ``` r
 for (i in 1:3) {
   pred <- paste0("pred", i)
-  path <- paste0("demo/long/time_code", i, ".csv")
+  path <- paste0("demo/time_code", i, ".csv")
   wide <- Code[c(Code[, pred] > 0), c("id", "month", pred)]
   freq <- wide[, pred][[1]]
   long <- tibble(
@@ -61,13 +61,13 @@ for (i in 1:3) {
 }
 ```
 
-    ## [1] "demo/long/time_code1.csv"
-    ## [1] "demo/long/time_code2.csv"
-    ## [1] "demo/long/time_code3.csv"
+    ## [1] "demo/time_code1.csv"
+    ## [1] "demo/time_code2.csv"
+    ## [1] "demo/time_code3.csv"
 
 ``` r
 proc.time()
 ```
 
     ##    user  system elapsed 
-    ##   2.791   0.269   2.994
+    ##   2.906   0.215   3.034
