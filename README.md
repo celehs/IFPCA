@@ -43,8 +43,10 @@ Code <- bind_rows(
 
 ``` r
 fu_time <- Code %>% select(split, id, fu_time) %>% distinct()
-write_csv(fu_time %>% filter(split == "Train"), "demo/follow_up_train.csv")
-write_csv(fu_time %>% filter(split == "Valid"), "demo/follow_up_valid.csv")
+follow_up_train <- fu_time %>% filter(split == "Train") %>% select(-split)
+follow_up_valid <- fu_time %>% filter(split == "Valid") %>% select(-split)
+write_csv(follow_up_train, "demo/follow_up_train.csv")
+write_csv(follow_up_valid, "demo/follow_up_valid.csv")
 ```
 
 ``` r
@@ -70,4 +72,4 @@ proc.time()
 ```
 
     ##    user  system elapsed 
-    ##   2.906   0.215   3.034
+    ##   2.558   0.171   2.716
