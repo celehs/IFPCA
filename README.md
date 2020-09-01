@@ -13,9 +13,102 @@ follow_up_valid <- read_csv(paste0(url, "follow_up_valid.csv"))
 time_code1 <- read_csv(paste0(url, "time_code1.csv"))
 time_code2 <- read_csv(paste0(url, "time_code2.csv"))
 time_code3 <- read_csv(paste0(url, "time_code3.csv"))
+follow_up_train
 ```
 
+    ## # A tibble: 20,600 x 2
+    ##       id fu_time
+    ##    <dbl>   <dbl>
+    ##  1     1   49.4 
+    ##  2     2   13.9 
+    ##  3     3   12.6 
+    ##  4     4   14.9 
+    ##  5     5   80.7 
+    ##  6     6   42.6 
+    ##  7     7   13.7 
+    ##  8     8   21.0 
+    ##  9     9    5.16
+    ## 10    10    6.60
+    ## # … with 20,590 more rows
+
 ``` r
+follow_up_valid
+```
+
+    ## # A tibble: 500 x 2
+    ##       id fu_time
+    ##    <dbl>   <dbl>
+    ##  1 90001   71.7 
+    ##  2 90002   70.4 
+    ##  3 90003   14.9 
+    ##  4 90004   33.8 
+    ##  5 90005   98.6 
+    ##  6 90006   17.6 
+    ##  7 90007   13.9 
+    ##  8 90008    1.45
+    ##  9 90009    5.55
+    ## 10 90010    7.62
+    ## # … with 490 more rows
+
+``` r
+time_code1
+```
+
+    ## # A tibble: 168,374 x 2
+    ##       id month
+    ##    <dbl> <dbl>
+    ##  1     4     1
+    ##  2     4     1
+    ##  3     4     1
+    ##  4     4     2
+    ##  5     5     4
+    ##  6     5     4
+    ##  7     5     4
+    ##  8     5     5
+    ##  9     5     5
+    ## 10     5     5
+    ## # … with 168,364 more rows
+
+``` r
+time_code2
+```
+
+    ## # A tibble: 68,242 x 2
+    ##       id month
+    ##    <dbl> <dbl>
+    ##  1     1    11
+    ##  2     5     1
+    ##  3     5     2
+    ##  4     5     4
+    ##  5     6     2
+    ##  6     6    11
+    ##  7     6    22
+    ##  8     6    22
+    ##  9     6    25
+    ## 10     6    29
+    ## # … with 68,232 more rows
+
+``` r
+time_code3
+```
+
+    ## # A tibble: 21,501 x 2
+    ##       id month
+    ##    <dbl> <dbl>
+    ##  1     6    37
+    ##  2     6    37
+    ##  3     6    38
+    ##  4     6    38
+    ##  5     6    39
+    ##  6     6    39
+    ##  7     6    40
+    ##  8     6    40
+    ##  9     6    41
+    ## 10     6    41
+    ## # … with 21,491 more rows
+
+``` r
+set.seed(1)
 fu_train <- follow_up_train$fu_time
 fu_valid <- follow_up_valid$fu_time
 names(fu_train) <- follow_up_train$id
@@ -75,19 +168,25 @@ ifpca <- function(time, fu_train, fu_valid,
                   PPIC_K = FALSE, n.grid = 401, propvar = 0.85, n_core = NULL) {
   if (is.null(n_core)) n_core <- parallel::detectCores()
   registerDoParallel(cores = n_core)    
+  # training
+  t <- time[names(time) %in% names(fu_train)]
+  id <- names(t)
+  names(t) <- NULL
   tseq <- 0:floor(max(c(fu_train, fu_valid)))
-  PKTS <- GetPK(id = names(time), t = time, tseq = tseq, nn = length(fu_train))
-  return(PKTS[!is.na(PKTS)])
+  nn <- length(fu_train)
+  PKTS <- GetPK(id = id, t = t, tseq = tseq, nn = nn)
+  ans <- list(PKTS = PKTS, 
+              id = id, 
+              t = t, 
+              tseq = tseq, 
+              nn = nn)
+  return(ans)
 }
 ```
 
 ``` r
-pkts <- ifpca(time1, fu_train, fu_valid)
-str(pkts)
+obj <- ifpca(time1, fu_train, fu_valid)
 ```
-
-    ##  Named int [1:12523] 1 27 95 1 70 3 1 4 9 31 ...
-    ##  - attr(*, "names")= chr [1:12523] "4" "5" "6" "9" ...
 
 ``` r
 library(MASTA)
@@ -155,11 +254,44 @@ eval(parse(text = txt))
 id <- (1:(nn+NN))[tmp2]
 id <- rep(id, TrainNP)
 PKTS <- NULL
-PKTS <- cbind(PKTS, GetPK(id = id, t = t, tseq = sort(unique(TrainCode$month)), nn = nrow(TrainN)))    
+tseq <- sort(unique(TrainCode$month))
+nn <- nrow(TrainN)
+PKTS <- cbind(PKTS, GetPK(id = id, t = t, tseq = tseq, nn = nn))    
 str(PKTS[!is.na(PKTS)])
 ```
 
     ##  int [1:12250] 1 4 19 2 2 1 2 33 43 2 ...
+
+``` r
+str(obj$PKTS[!is.na(obj$PKTS)])
+```
+
+    ##  Named int [1:12250] 1 27 95 1 70 3 1 4 9 31 ...
+    ##  - attr(*, "names")= chr [1:12250] "4" "5" "6" "9" ...
+
+``` r
+all(id == obj$id)
+```
+
+    ## [1] TRUE
+
+``` r
+all(t == obj$t)
+```
+
+    ## [1] TRUE
+
+``` r
+all(tseq == obj$teq)
+```
+
+    ## [1] TRUE
+
+``` r
+nn == obj$nn
+```
+
+    ## [1] TRUE
 
 ``` r
 sort(unique(TrainCode$month))
@@ -181,4 +313,4 @@ proc.time()
 ```
 
     ##    user  system elapsed 
-    ##  12.680   0.274  12.906
+    ##  12.801   0.350  13.094

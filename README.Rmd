@@ -19,9 +19,15 @@ follow_up_valid <- read_csv(paste0(url, "follow_up_valid.csv"))
 time_code1 <- read_csv(paste0(url, "time_code1.csv"))
 time_code2 <- read_csv(paste0(url, "time_code2.csv"))
 time_code3 <- read_csv(paste0(url, "time_code3.csv"))
+follow_up_train
+follow_up_valid
+time_code1
+time_code2
+time_code3
 ```
 
 ```{r}
+set.seed(1)
 fu_train <- follow_up_train$fu_time
 fu_valid <- follow_up_valid$fu_time
 names(fu_train) <- follow_up_train$id
@@ -57,15 +63,24 @@ ifpca <- function(time, fu_train, fu_valid,
                   PPIC_K = FALSE, n.grid = 401, propvar = 0.85, n_core = NULL) {
   if (is.null(n_core)) n_core <- parallel::detectCores()
   registerDoParallel(cores = n_core)    
+  # training
+  t <- time[names(time) %in% names(fu_train)]
+  id <- names(t)
+  names(t) <- NULL
   tseq <- 0:floor(max(c(fu_train, fu_valid)))
-  PKTS <- GetPK(id = names(time), t = time, tseq = tseq, nn = length(fu_train))
-  return(PKTS[!is.na(PKTS)])
+  nn <- length(fu_train)
+  PKTS <- GetPK(id = id, t = t, tseq = tseq, nn = nn)
+  ans <- list(PKTS = PKTS, 
+              id = id, 
+              t = t, 
+              tseq = tseq, 
+              nn = nn)
+  return(ans)
 }
 ```
 
 ```{r}
-pkts <- ifpca(time1, fu_train, fu_valid)
-str(pkts)
+obj <- ifpca(time1, fu_train, fu_valid)
 ```
 
 ```{r}
@@ -120,8 +135,18 @@ eval(parse(text = txt))
 id <- (1:(nn+NN))[tmp2]
 id <- rep(id, TrainNP)
 PKTS <- NULL
-PKTS <- cbind(PKTS, GetPK(id = id, t = t, tseq = sort(unique(TrainCode$month)), nn = nrow(TrainN)))    
+tseq <- sort(unique(TrainCode$month))
+nn <- nrow(TrainN)
+PKTS <- cbind(PKTS, GetPK(id = id, t = t, tseq = tseq, nn = nn))    
 str(PKTS[!is.na(PKTS)])
+```
+
+```{r}
+str(obj$PKTS[!is.na(obj$PKTS)])
+all(id == obj$id)
+all(t == obj$t)
+all(tseq == obj$teq)
+nn == obj$nn
 ```
 
 ```{r}
