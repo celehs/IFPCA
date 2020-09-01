@@ -1,0 +1,53 @@
+---
+title: "Follow-up Time"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# options(width = 100)
+```
+
+```{r}
+library(data.table)
+```
+
+```{r}
+TrainSurv <- fread("data_org/TrainSurv.csv")
+ValidSurv <- fread("data_org/ValidSurv.csv")
+TrainCode <- fread("data_org/TrainCode.csv")
+ValidCode <- fread("data_org/ValidCode.csv")
+```
+
+```{r}
+TrainSurv$event.ind <- with(TrainSurv, 1 * (event_time < fu_time))
+subset(TrainSurv, event_ind != event.ind)
+```
+
+```{r}
+ValidSurv$event.ind <- with(ValidSurv, 1 * (event_time < fu_time))
+subset(ValidSurv, event_ind != event.ind)
+```
+
+```{r}
+subset(TrainSurv, fu_time >= 100)
+subset(ValidSurv, fu_time >= 100)
+```
+
+```{r}
+names(TrainSurv)[4] <- "TrainSurv.fu_time"
+names(TrainCode)[2] <- "TrainCode.fu_time"
+Train <- merge(TrainSurv[, 1:4], TrainCode[, 1:2])
+TrainSub <- subset(Train, TrainSurv.fu_time != TrainCode.fu_time)
+unique.data.frame(TrainSub)
+```
+
+```{r}
+names(ValidSurv)[4] <- "ValidSurv.fu_time"
+names(ValidCode)[2] <- "ValidCode.fu_time"
+Valid <- merge(ValidSurv[, 1:4], ValidCode[, 1:2])
+ValidSub <- subset(Valid, ValidSurv.fu_time != ValidCode.fu_time)
+unique.data.frame(ValidSub)
+```

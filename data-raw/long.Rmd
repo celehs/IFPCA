@@ -1,0 +1,44 @@
+---
+title: "Wide to Long Format"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+Code <- bind_rows(
+  Train = read_csv("data_org/TrainCode.csv"), 
+  Valid = read_csv("data_org/ValidCode.csv"), .id = "split")
+```
+
+```{r}
+fu_time <- Code %>% select(split, id, fu_time) %>% distinct()
+follow_up_train <- fu_time %>% filter(split == "Train") %>% select(-split)
+follow_up_valid <- fu_time %>% filter(split == "Valid") %>% select(-split)
+write_csv(follow_up_train, "long/follow_up_train.csv")
+write_csv(follow_up_valid, "long/follow_up_valid.csv")
+```
+
+```{r}
+for (i in 1:3) {
+  pred <- paste0("pred", i)
+  path <- paste0("long/time_code", i, ".csv")
+  wide <- Code[c(Code[, pred] > 0), c("id", "month", pred)]
+  freq <- wide[, pred][[1]]
+  long <- tibble(
+    id = rep(wide$id, freq),
+    month = rep(wide$month, freq))
+  write_csv(long, path)  
+  print(path)  
+}
+```
+
+```{r}
+proc.time()
+```
