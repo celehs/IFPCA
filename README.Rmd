@@ -25,7 +25,7 @@ i <- 3 # 1, 2, 3
 
 ```{r}
 # time for each code (training + validation)
-time_code <- readr::read_csv(paste0("data-raw/long/time_code", i, ".csv"))
+time_code <- readr::read_csv(paste0("data-raw/time_code", i, ".csv"))
 time <- time_code$month
 names(time) <- time_code$id
 str(time)
@@ -33,8 +33,8 @@ str(time)
 
 ```{r}
 # follow up time for training and validation sets
-follow_up_train <- readr::read_csv("data-raw/long/follow_up_train.csv")
-follow_up_valid <- readr::read_csv("data-raw/long/follow_up_valid.csv")
+follow_up_train <- readr::read_csv("data-raw/follow_up_train.csv")
+follow_up_valid <- readr::read_csv("data-raw/follow_up_valid.csv")
 fu_train <- follow_up_train$fu_time
 fu_valid <- follow_up_valid$fu_time
 names(fu_train) <- follow_up_train$id

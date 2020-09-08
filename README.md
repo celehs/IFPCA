@@ -29,7 +29,7 @@ i <- 3 # 1, 2, 3
 
 ``` r
 # time for each code (training + validation)
-time_code <- readr::read_csv(paste0("data-raw/long/time_code", i, ".csv"))
+time_code <- readr::read_csv(paste0("data-raw/time_code", i, ".csv"))
 ```
 
     ## Parsed with column specification:
@@ -49,7 +49,7 @@ str(time)
 
 ``` r
 # follow up time for training and validation sets
-follow_up_train <- readr::read_csv("data-raw/long/follow_up_train.csv")
+follow_up_train <- readr::read_csv("data-raw/follow_up_train.csv")
 ```
 
     ## Parsed with column specification:
@@ -59,7 +59,7 @@ follow_up_train <- readr::read_csv("data-raw/long/follow_up_train.csv")
     ## )
 
 ``` r
-follow_up_valid <- readr::read_csv("data-raw/long/follow_up_valid.csv")
+follow_up_valid <- readr::read_csv("data-raw/follow_up_valid.csv")
 ```
 
     ## Parsed with column specification:
@@ -91,7 +91,7 @@ system.time(NEW <- ifpca(time, fu_train, fu_valid)$FPCA)
 ```
 
     ##    user  system elapsed 
-    ##  11.519   1.057   8.187
+    ##  11.570   1.004   8.234
 
 ## Old Implementation
 
@@ -120,7 +120,7 @@ system.time(OLD <- masta.fpca(data_org)$FPCA[[i]])
     ## [1] "validation: pred3"
 
     ##    user  system elapsed 
-    ## 109.130  10.418  77.118
+    ## 109.654  10.128  78.382
 
 ## New vs Old Results
 
@@ -621,4 +621,4 @@ proc.time()
 ```
 
     ##    user  system elapsed 
-    ## 123.266  11.619  88.468
+    ## 123.694  11.265  89.993
