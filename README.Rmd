@@ -3,31 +3,38 @@ title: "Intensity Functional Principal Component Analysis (IFPCA)"
 output: github_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+## New Implementation
 
-```{r, message=FALSE}
-library(tidyverse)
+```{r}
 library(doParallel)
-source("R/GetPK.R")
-source("R/masta-fpca-main.R")
-source("R/masta-fpca-kern.R")
-url <- "data-raw/long/"
-follow_up_train <- read_csv(paste0(url, "follow_up_train.csv"))
-follow_up_valid <- read_csv(paste0(url, "follow_up_valid.csv"))
-time_code1 <- read_csv(paste0(url, "time_code1.csv"))
-time_code2 <- read_csv(paste0(url, "time_code2.csv"))
-time_code3 <- read_csv(paste0(url, "time_code3.csv"))
-follow_up_train
-follow_up_valid
-time_code1
-time_code2
-time_code3
 ```
 
 ```{r}
-set.seed(1)
+url <- "https://raw.githubusercontent.com/celehs/MASTA/master/R/"
+source(paste0(url, "masta-fpca-kern.R"))
+source(paste0(url, "masta-fpca-main.R"))
+source(paste0(url, "masta-fpca-ppic.R"))
+source(paste0(url, "masta-fpca-pred.R"))
+source("R/GetPK.R")
+source("R/IFPCA.R")
+```
+
+```{r}
+i <- 3 # 1, 2, 3 
+```
+
+```{r}
+# time for each code (training + validation)
+time_code <- readr::read_csv(paste0("data-raw/long/time_code", i, ".csv"))
+time <- time_code$month
+names(time) <- time_code$id
+str(time)
+```
+
+```{r}
+# follow up time for training and validation sets
+follow_up_train <- readr::read_csv("data-raw/long/follow_up_train.csv")
+follow_up_valid <- readr::read_csv("data-raw/long/follow_up_valid.csv")
 fu_train <- follow_up_train$fu_time
 fu_valid <- follow_up_valid$fu_time
 names(fu_train) <- follow_up_train$id
@@ -37,120 +44,48 @@ str(fu_valid)
 ```
 
 ```{r}
-time1 <- time_code1$month
-time2 <- time_code2$month
-time3 <- time_code3$month
-names(time1) <- time_code1$id
-names(time2) <- time_code2$id
-names(time3) <- time_code3$id
-str(time1)
-str(time2)
-str(time3)
+system.time(NEW <- ifpca(time, fu_train, fu_valid)$FPCA)
+```
+
+## Old Implementation
+
+```{r}
+library(MASTA) 
 ```
 
 ```{r}
-#' @title Intensity Functional Principal Component Analysis (IFPCA)
-#' @description Performs IFPCA to extract features from longitudinal encounter data.
-#' @param data input data. See \code{data(data_org)} for example.
-#' @param PPIC_K a logical indicating whether you want to use Pseudo-Poisson Information Criterion to choose 
-#' the number of principal components K (K.select="PPIC") \code{TRUE} or another criterion to choose 
-#' K (K.select="PropVar") \code{FALSE} in the PP_FPCA_Parallel function (hidden). Default is \code{FALSE}.
-#' @param n.grid an integer value for grid points used in estimating covariance function g. Default is \code{401}.
-#' @param propvar a proportion of variation used to select number of FPCs. Default is \code{0.85}.
-#' @param n_core an integer to specify the number of core using for parallel computing. 
-#' @export
-ifpca <- function(time, fu_train, fu_valid, 
-                  PPIC_K = FALSE, n.grid = 401, propvar = 0.85, n_core = NULL) {
-  if (is.null(n_core)) n_core <- parallel::detectCores()
-  registerDoParallel(cores = n_core)    
-  # training
-  t <- time[names(time) %in% names(fu_train)]
-  id <- names(t)
-  names(t) <- NULL
-  tseq <- 0:floor(max(c(fu_train, fu_valid)))
-  nn <- length(fu_train)
-  PKTS <- GetPK(id = id, t = t, tseq = tseq, nn = nn)
-  ans <- list(PKTS = PKTS, 
-              id = id, 
-              t = t, 
-              tseq = tseq, 
-              nn = nn)
-  return(ans)
-}
+system.time(OLD <- masta.fpca(data_org)$FPCA[[i]])
+```
+
+## New vs Old Results
+
+```{r}
+c(NEW$K, OLD$K)
 ```
 
 ```{r}
-obj <- ifpca(time1, fu_train, fu_valid)
+str(NEW$scores)
+str(OLD$scores)
 ```
 
 ```{r}
-library(MASTA)
+str(NEW$dens)
+str(OLD$dens)
 ```
 
 ```{r}
-data <- data_org
-TrainSurv <- data.frame(data$TrainSurv)
-ValidSurv <- data.frame(data$ValidSurv)
-TrainCode <- data.frame(data$TrainCode)
-ValidCode <- data.frame(data$ValidCode)
-colnames(TrainSurv) <- colnames(ValidSurv) <- c(
-  "case", "delta", "sx", "sc", paste0("base_pred", 1:(NCOL(TrainSurv) - 4)))
-colnames(TrainCode)[1:2] <- colnames(ValidCode)[1:2] <- c("case", "analysisfu")  
-TrainSurv_pred_org <- TrainSurv[-(1:4)]
-ValidSurv_pred_org <- ValidSurv[-(1:4)]  
-codes <- names(TrainCode[, -(1:3)])
-TrainN <- rowsum(TrainCode[, -(1:3)], group = TrainCode[, 1])
-ValidN <- rowsum(ValidCode[, -(1:3)], group = ValidCode[, 1])
-TrainN <- cbind(case = rownames(TrainN), TrainN)
-ValidN <- cbind(case = rownames(ValidN), ValidN)  
-colnames(TrainN)[-1] <- paste0(colnames(TrainCode)[-(1:3)], "_total")
-colnames(ValidN)[-1] <- paste0(colnames(ValidCode)[-(1:3)], "_total")
-TrainPatNum <- unique(TrainCode[, 1])
-ValidPatNum <- unique(ValidCode[, 1])
-nn <- nrow(TrainSurv) # labeled (training)
-nnv <- nrow(ValidSurv) # labeled (validation)
-NN <- length(TrainPatNum) - nn # unlabeled  
-Tend <- 1
-TrainCode$monthstd <- TrainCode$month / TrainCode$analysisfu # standardize follow up time
-ValidCode$monthstd <- ValidCode$month / ValidCode$analysisfu # standardize follow up time 
-TrainFU <- aggregate(TrainCode$analysisfu, list(TrainCode$case), max)  
-ValidFU <- aggregate(ValidCode$analysisfu, list(ValidCode$case), max)
-TrainFU <- TrainFU[match(TrainPatNum, TrainFU[, 1]), 2]
-ValidFU <- ValidFU[match(ValidPatNum, ValidFU[, 1]), 2]
-#--TRAINING---
-K <- NULL
-ft.e <- ft.e.S <- PKTS <- NULL
-FPCA <- vector("list", length(codes))
-names(FPCA) <- codes
+str(NEW$deriv)
+str(OLD$deriv)
 ```
 
 ```{r}
-i <- 1
-print(paste("training:", codes[i]))
-tmp2 <- TrainN[, i + 1] > 0
-TrainNP <- TrainN[tmp2, i + 1]
-### PKs from Two-step procedure
-txt <- paste0("t=with(TrainCode,unlist(sapply(seq_along(month),function(j) rep(month[j],",codes[i],"[j]))))")
-eval(parse(text = txt))
-id <- (1:(nn+NN))[tmp2]
-id <- rep(id, TrainNP)
-PKTS <- NULL
-tseq <- sort(unique(TrainCode$month))
-nn <- nrow(TrainN)
-PKTS <- cbind(PKTS, GetPK(id = id, t = t, tseq = tseq, nn = nn))    
-str(PKTS[!is.na(PKTS)])
+str(NEW$mean)
+str(OLD$mean)
 ```
 
 ```{r}
-str(obj$PKTS[!is.na(obj$PKTS)])
-all(id == obj$id)
-all(t == obj$t)
-all(tseq == obj$teq)
-nn == obj$nn
-```
-
-```{r}
-sort(unique(TrainCode$month))
+str(NEW$baseline)
+str(OLD$baseline)
 ```
 
 ```{r}
