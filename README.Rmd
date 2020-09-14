@@ -44,7 +44,8 @@ str(fu_valid)
 ```
 
 ```{r}
-system.time(NEW <- ifpca(time, fu_train, fu_valid)$FPCA)
+system.time(NEW <- ifpca(time, fu_train, fu_valid))
+str(NEW)
 ```
 
 ## Old Implementation
@@ -54,38 +55,8 @@ library(MASTA)
 ```
 
 ```{r}
-system.time(OLD <- masta.fpca(data_org)$FPCA[[i]])
-```
-
-## New vs Old Results
-
-```{r}
-c(NEW$K, OLD$K)
-```
-
-```{r}
-str(NEW$scores)
-str(OLD$scores)
-```
-
-```{r}
-str(NEW$dens)
-str(OLD$dens)
-```
-
-```{r}
-str(NEW$deriv)
-str(OLD$deriv)
-```
-
-```{r}
-str(NEW$mean)
-str(OLD$mean)
-```
-
-```{r}
-str(NEW$baseline)
-str(OLD$baseline)
+system.time(OLD <- masta.fpca(data_org))
+str(OLD)
 ```
 
 ```{r}
