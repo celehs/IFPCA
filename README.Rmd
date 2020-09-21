@@ -47,7 +47,7 @@ str(fu_train)
 str(fu_valid)
 ```
 
-## Itensity FPCA
+### Feature Extraction
 
 ```{r}
 system.time(ans <- ifpca(time, fu_train, fu_valid))

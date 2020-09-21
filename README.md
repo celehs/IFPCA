@@ -59,14 +59,14 @@ str(fu_valid)
     ##  Named num [1:500] 71.7 70.4 14.9 33.8 98.6 ...
     ##  - attr(*, "names")= chr [1:500] "90001" "90002" "90003" "90004" ...
 
-## Itensity FPCA
+### Feature Extraction
 
 ``` r
 system.time(ans <- ifpca(time, fu_train, fu_valid))
 ```
 
     ##    user  system elapsed 
-    ##   8.400   0.283   8.691
+    ##   8.402   0.299   8.705
 
 ``` r
 data.table(ans$TrainFt) # Extracted Features (Training) 
