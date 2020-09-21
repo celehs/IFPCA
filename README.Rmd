@@ -1,26 +1,41 @@
 ---
-title: "Intensity Functional Principal Component Analysis (IFPCA)"
+title: "Intensity Functional Principal Component Analysis"
 output: github_document
 ---
 
+## Overview
+
+This package re-implements the first step of the {[MASTA](https://celehs.github.io/MASTA/)} package to extract features from longitudinal encounter records. Compared to {MASTA}, the input data of {IFPCA} is more compact and memory efficent. Click [HERE](https://github.com/celehs/IFPCA/tree/master/data-raw) to view input data structure.
+
+## Installation
+
+Install development version from GitHub.
+
+```{r, eval=FALSE}
+# install.packages("remotes")
+remotes::install_github("celehs/IFPCA")
+```
+
+Load the package into R.
+
 ```{r}
 library(IFPCA)
+```
+
+## Data Example
+
+### Data Preparation
+
+```{r}
 library(data.table)
 ```
 
 ```{r}
 i <- 3 # 1, 2, 3 
-```
-
-```{r}
 # time for each code (training + validation)
 time_code <- fread(paste0("data-raw/time_code", i, ".csv"))
 time <- time_code$month
 names(time) <- time_code$id
-str(time)
-```
-
-```{r}
 # follow up time for training and validation sets
 follow_up_train <- fread("data-raw/follow_up_train.csv")
 follow_up_valid <- fread("data-raw/follow_up_valid.csv")
@@ -32,16 +47,19 @@ str(fu_train)
 str(fu_valid)
 ```
 
+## Itensity FPCA
+
 ```{r}
-system.time(NEW <- ifpca(time, fu_train, fu_valid))
+system.time(ans <- ifpca(time, fu_train, fu_valid))
 ```
 
 ```{r}
-data.table(NEW$TrainFt) # Features (Training Set)
-data.table(NEW$TrainSc)
+data.table(ans$TrainFt) # Extracted Features (Training) 
+data.table(ans$ValidFt) # Extracted Features (Validation)
 ```
 
-```{r}
-data.table(NEW$ValidFt) # Features (Validation Set)
-data.table(NEW$ValidSc)
-```
+## References
+
+- Wu, S., Müller, H., Zhang, Z. (2013). __Functional Data Analysis for Point Processes with Rare Events__. _Statistica Sinica_, 23:1-23. <https://doi.org/10.5705/ss.2010.162>
+
+- Liang, L., Uno, H., Ma, Y., Cai, T. __Robust Approach to Event Time Annotation Using Longitudinal Medical Encounters__. _Working Paper_.

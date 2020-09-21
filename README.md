@@ -1,27 +1,44 @@
-Intensity Functional Principal Component Analysis (IFPCA)
+Intensity Functional Principal Component Analysis
 ================
+
+## Overview
+
+This package re-implements the first step of the
+{[MASTA](https://celehs.github.io/MASTA/)} package to extract features
+from longitudinal encounter records. Compared to {MASTA}, the input data
+of {IFPCA} is more compact and memory efficent. Click
+[HERE](https://github.com/celehs/IFPCA/tree/master/data-raw) to view
+input data structure.
+
+## Installation
+
+Install development version from GitHub.
+
+``` r
+# install.packages("remotes")
+remotes::install_github("celehs/IFPCA")
+```
+
+Load the package into R.
 
 ``` r
 library(IFPCA)
+```
+
+## Data Example
+
+### Data Preparation
+
+``` r
 library(data.table)
 ```
 
 ``` r
 i <- 3 # 1, 2, 3 
-```
-
-``` r
 # time for each code (training + validation)
 time_code <- fread(paste0("data-raw/time_code", i, ".csv"))
 time <- time_code$month
 names(time) <- time_code$id
-str(time)
-```
-
-    ##  Named int [1:21501] 37 37 38 38 39 39 40 40 41 41 ...
-    ##  - attr(*, "names")= chr [1:21501] "6" "6" "6" "6" ...
-
-``` r
 # follow up time for training and validation sets
 follow_up_train <- fread("data-raw/follow_up_train.csv")
 follow_up_valid <- fread("data-raw/follow_up_valid.csv")
@@ -42,15 +59,17 @@ str(fu_valid)
     ##  Named num [1:500] 71.7 70.4 14.9 33.8 98.6 ...
     ##  - attr(*, "names")= chr [1:500] "90001" "90002" "90003" "90004" ...
 
+## Itensity FPCA
+
 ``` r
-system.time(NEW <- ifpca(time, fu_train, fu_valid))
+system.time(ans <- ifpca(time, fu_train, fu_valid))
 ```
 
     ##    user  system elapsed 
-    ##   8.371   0.333   8.707
+    ##   8.400   0.283   8.691
 
 ``` r
-data.table(NEW$TrainFt) # Features (Training Set)
+data.table(ans$TrainFt) # Extracted Features (Training) 
 ```
 
     ##         1stCode        Pk       ChP    1stScore      logN
@@ -67,24 +86,7 @@ data.table(NEW$TrainFt) # Features (Training Set)
     ## 20600: 23.00000 24.274004 23.841643  3.02440941 1.3862944
 
 ``` r
-data.table(NEW$TrainSc)
-```
-
-    ##         1stCode    1stScore    2ndScore    3rdScore   4thScore      logN
-    ##     1: 49.41273 -1.77557902 -0.80768530 -0.13224942  0.0722702 0.0000000
-    ##     2: 13.93018 -1.77557902 -0.80768530 -0.13224942  0.0722702 0.0000000
-    ##     3: 12.55031 -1.77557902 -0.80768530 -0.13224942  0.0722702 0.0000000
-    ##     4: 14.85010 -1.77557902 -0.80768530 -0.13224942  0.0722702 0.0000000
-    ##     5: 80.65708 -1.77557902 -0.80768530 -0.13224942  0.0722702 0.0000000
-    ##    ---                                                                  
-    ## 20596:  2.00000 -0.05899512 -0.04692548  0.84170466 -0.7430017 1.3862944
-    ## 20597: 14.00000  0.71721892 -0.49145337 -0.01335393 -0.1251246 0.6931472
-    ## 20598:  8.00000 -1.32323471  3.06108877  1.89695388 -1.3981819 1.0986123
-    ## 20599: 13.00000 -1.36421318  3.04284506  1.76690504 -1.2805033 1.0986123
-    ## 20600: 23.00000  3.02440941 -1.74916330  0.67788658  0.6016312 1.3862944
-
-``` r
-data.table(NEW$ValidFt) # Features (Validation Set)
+data.table(ans$ValidFt) # Extracted Features (Validation)
 ```
 
     ##       1stCode       Pk      ChP  1stScore      logN
@@ -100,19 +102,11 @@ data.table(NEW$ValidFt) # Features (Validation Set)
     ## 499: 27.17043 27.17043 27.17043 -1.775579 0.0000000
     ## 500: 29.30595 29.30595 29.30595 -1.775579 0.0000000
 
-``` r
-data.table(NEW$ValidSc)
-```
+## References
 
-    ##       1stCode  1stScore   2ndScore   3rdScore  4thScore      logN
-    ##   1: 71.72074 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000
-    ##   2: 70.37372 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000
-    ##   3: 14.94867  3.038376  2.0551266 -1.5326815 0.3128744 0.6931472
-    ##   4: 33.80698 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000
-    ##   5: 98.62834 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000
-    ##  ---                                                             
-    ## 496: 35.58111 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000
-    ## 497: 27.36756 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000
-    ## 498: 24.60780 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000
-    ## 499: 27.17043 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000
-    ## 500: 29.30595 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000
+  - Wu, S., Müller, H., Zhang, Z. (2013). **Functional Data Analysis for
+    Point Processes with Rare Events**. *Statistica Sinica*, 23:1-23.
+    <https://doi.org/10.5705/ss.2010.162>
+
+  - Liang, L., Uno, H., Ma, Y., Cai, T. **Robust Approach to Event Time
+    Annotation Using Longitudinal Medical Encounters**. *Working Paper*.

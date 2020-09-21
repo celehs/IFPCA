@@ -1,0 +1,8 @@
+url: https://celehs.github.io/IFPCA/
+
+template:
+  params:
+    bootswatch: spacelab
+
+navbar:
+  type: inverse

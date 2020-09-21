@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Intensity Functional Principal Component Analysis (IFPCA) • IFPCA</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/spacelab/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -20,7 +20,7 @@
 </head>
 <body data-spy="scroll" data-target="#toc">
     <div class="container template-home">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <header><div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
@@ -66,20 +66,36 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="intensity-functional-principal-component-analysis-ifpca" class="section level1">
+<div id="intensity-functional-principal-component-analysis" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#intensity-functional-principal-component-analysis-ifpca" class="anchor"></a>Intensity Functional Principal Component Analysis (IFPCA)</h1></div>
-<div class="sourceCode" id="cb1"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">IFPCA</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">data.table</span>)</pre></div>
-<div class="sourceCode" id="cb2"><pre class="r"><span class="no">i</span> <span class="kw">&lt;-</span> <span class="fl">3</span> <span class="co"># 1, 2, 3 </span></pre></div>
-<div class="sourceCode" id="cb3"><pre class="r"><span class="co"># time for each code (training + validation)</span>
+<a href="#intensity-functional-principal-component-analysis" class="anchor"></a>Intensity Functional Principal Component Analysis</h1></div>
+<div id="overview" class="section level2">
+<h2 class="hasAnchor">
+<a href="#overview" class="anchor"></a>Overview</h2>
+<p>This package re-implements the first step of the {<a href="https://celehs.github.io/MASTA/">MASTA</a>} package to extract features from longitudinal encounter records. Compared to {MASTA}, the input data of {IFPCA} is more compact and memory efficent. Click <a href="https://github.com/celehs/IFPCA/tree/master/data-raw">HERE</a> to view input data structure.</p>
+</div>
+<div id="installation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installation" class="anchor"></a>Installation</h2>
+<p>Install development version from GitHub.</p>
+<div class="sourceCode" id="cb1"><pre class="r"><span class="co"># install.packages("remotes")</span>
+<span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/remotes/man/install_github.html">install_github</a></span>(<span class="st">"celehs/IFPCA"</span>)</pre></div>
+<p>Load the package into R.</p>
+<div class="sourceCode" id="cb2"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">IFPCA</span>)</pre></div>
+</div>
+<div id="data-example" class="section level2">
+<h2 class="hasAnchor">
+<a href="#data-example" class="anchor"></a>Data Example</h2>
+<div id="data-preparation" class="section level3">
+<h3 class="hasAnchor">
+<a href="#data-preparation" class="anchor"></a>Data Preparation</h3>
+<div class="sourceCode" id="cb3"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">data.table</span>)</pre></div>
+<div class="sourceCode" id="cb4"><pre class="r"><span class="no">i</span> <span class="kw">&lt;-</span> <span class="fl">3</span> <span class="co"># 1, 2, 3 </span>
+<span class="co"># time for each code (training + validation)</span>
 <span class="no">time_code</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html">fread</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"data-raw/time_code"</span>, <span class="no">i</span>, <span class="st">".csv"</span>))
 <span class="no">time</span> <span class="kw">&lt;-</span> <span class="no">time_code</span>$<span class="no">month</span>
 <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">time</span>) <span class="kw">&lt;-</span> <span class="no">time_code</span>$<span class="no">id</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="no">time</span>)</pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co">##  Named int [1:21501] 37 37 38 38 39 39 40 40 41 41 ...</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">##  - attr(*, "names")= chr [1:21501] "6" "6" "6" "6" ...</span></a></code></pre></div>
-<div class="sourceCode" id="cb5"><pre class="r"><span class="co"># follow up time for training and validation sets</span>
+<span class="co"># follow up time for training and validation sets</span>
 <span class="no">follow_up_train</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html">fread</a></span>(<span class="st">"data-raw/follow_up_train.csv"</span>)
 <span class="no">follow_up_valid</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html">fread</a></span>(<span class="st">"data-raw/follow_up_valid.csv"</span>)
 <span class="no">fu_train</span> <span class="kw">&lt;-</span> <span class="no">follow_up_train</span>$<span class="no">fu_time</span>
@@ -87,66 +103,54 @@
 <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">fu_train</span>) <span class="kw">&lt;-</span> <span class="no">follow_up_train</span>$<span class="no">id</span>
 <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">fu_valid</span>) <span class="kw">&lt;-</span> <span class="no">follow_up_valid</span>$<span class="no">id</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="no">fu_train</span>)</pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co">##  Named num [1:20600] 49.4 13.9 12.6 14.9 80.7 ...</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="co">##  - attr(*, "names")= chr [1:20600] "1" "2" "3" "4" ...</span></a></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="no">fu_valid</span>)</pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co">##  Named num [1:500] 71.7 70.4 14.9 33.8 98.6 ...</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="co">##  - attr(*, "names")= chr [1:500] "90001" "90002" "90003" "90004" ...</span></a></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(<span class="no">NEW</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/ifpca.html">ifpca</a></span>(<span class="no">time</span>, <span class="no">fu_train</span>, <span class="no">fu_valid</span>))</pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co">##    user  system elapsed </span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="co">##   8.371   0.333   8.707</span></a></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="r"><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="no">NEW</span>$<span class="no">TrainFt</span>) <span class="co"># Features (Training Set)</span></pre></div>
-<div class="sourceCode" id="cb12"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="co">##         1stCode        Pk       ChP    1stScore      logN</span></a>
-<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="co">##     1: 49.41273 49.412731 49.412731 -1.77557902 0.0000000</span></a>
-<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="co">##     2: 13.93018 13.930185 13.930185 -1.77557902 0.0000000</span></a>
-<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="co">##     3: 12.55031 12.550308 12.550308 -1.77557902 0.0000000</span></a>
-<a class="sourceLine" id="cb12-5" data-line-number="5"><span class="co">##     4: 14.85010 14.850103 14.850103 -1.77557902 0.0000000</span></a>
-<a class="sourceLine" id="cb12-6" data-line-number="6"><span class="co">##     5: 80.65708 80.657084 80.657084 -1.77557902 0.0000000</span></a>
-<a class="sourceLine" id="cb12-7" data-line-number="7"><span class="co">##    ---                                                   </span></a>
-<a class="sourceLine" id="cb12-8" data-line-number="8"><span class="co">## 20596:  2.00000  3.750801  3.595729 -0.05899512 1.3862944</span></a>
-<a class="sourceLine" id="cb12-9" data-line-number="9"><span class="co">## 20597: 14.00000 14.359918 14.140123  0.71721892 0.6931472</span></a>
-<a class="sourceLine" id="cb12-10" data-line-number="10"><span class="co">## 20598:  8.00000  7.638604  7.434908 -1.32323471 1.0986123</span></a>
-<a class="sourceLine" id="cb12-11" data-line-number="11"><span class="co">## 20599: 13.00000 13.059548 12.711294 -1.36421318 1.0986123</span></a>
-<a class="sourceLine" id="cb12-12" data-line-number="12"><span class="co">## 20600: 23.00000 24.274004 23.841643  3.02440941 1.3862944</span></a></code></pre></div>
-<div class="sourceCode" id="cb13"><pre class="r"><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="no">NEW</span>$<span class="no">TrainSc</span>)</pre></div>
-<div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="co">##         1stCode    1stScore    2ndScore    3rdScore   4thScore      logN</span></a>
-<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="co">##     1: 49.41273 -1.77557902 -0.80768530 -0.13224942  0.0722702 0.0000000</span></a>
-<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="co">##     2: 13.93018 -1.77557902 -0.80768530 -0.13224942  0.0722702 0.0000000</span></a>
-<a class="sourceLine" id="cb14-4" data-line-number="4"><span class="co">##     3: 12.55031 -1.77557902 -0.80768530 -0.13224942  0.0722702 0.0000000</span></a>
-<a class="sourceLine" id="cb14-5" data-line-number="5"><span class="co">##     4: 14.85010 -1.77557902 -0.80768530 -0.13224942  0.0722702 0.0000000</span></a>
-<a class="sourceLine" id="cb14-6" data-line-number="6"><span class="co">##     5: 80.65708 -1.77557902 -0.80768530 -0.13224942  0.0722702 0.0000000</span></a>
-<a class="sourceLine" id="cb14-7" data-line-number="7"><span class="co">##    ---                                                                  </span></a>
-<a class="sourceLine" id="cb14-8" data-line-number="8"><span class="co">## 20596:  2.00000 -0.05899512 -0.04692548  0.84170466 -0.7430017 1.3862944</span></a>
-<a class="sourceLine" id="cb14-9" data-line-number="9"><span class="co">## 20597: 14.00000  0.71721892 -0.49145337 -0.01335393 -0.1251246 0.6931472</span></a>
-<a class="sourceLine" id="cb14-10" data-line-number="10"><span class="co">## 20598:  8.00000 -1.32323471  3.06108877  1.89695388 -1.3981819 1.0986123</span></a>
-<a class="sourceLine" id="cb14-11" data-line-number="11"><span class="co">## 20599: 13.00000 -1.36421318  3.04284506  1.76690504 -1.2805033 1.0986123</span></a>
-<a class="sourceLine" id="cb14-12" data-line-number="12"><span class="co">## 20600: 23.00000  3.02440941 -1.74916330  0.67788658  0.6016312 1.3862944</span></a></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="r"><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="no">NEW</span>$<span class="no">ValidFt</span>) <span class="co"># Features (Validation Set)</span></pre></div>
-<div class="sourceCode" id="cb16"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="co">##       1stCode       Pk      ChP  1stScore      logN</span></a>
-<a class="sourceLine" id="cb16-2" data-line-number="2"><span class="co">##   1: 71.72074 71.72074 71.72074 -1.775579 0.0000000</span></a>
-<a class="sourceLine" id="cb16-3" data-line-number="3"><span class="co">##   2: 70.37372 70.37372 70.37372 -1.775579 0.0000000</span></a>
-<a class="sourceLine" id="cb16-4" data-line-number="4"><span class="co">##   3: 14.94867 14.01437 13.64066  3.038376 0.6931472</span></a>
-<a class="sourceLine" id="cb16-5" data-line-number="5"><span class="co">##   4: 33.80698 33.80698 33.80698 -1.775579 0.0000000</span></a>
-<a class="sourceLine" id="cb16-6" data-line-number="6"><span class="co">##   5: 98.62834 98.62834 98.62834 -1.775579 0.0000000</span></a>
-<a class="sourceLine" id="cb16-7" data-line-number="7"><span class="co">##  ---                                               </span></a>
-<a class="sourceLine" id="cb16-8" data-line-number="8"><span class="co">## 496: 35.58111 35.58111 35.58111 -1.775579 0.0000000</span></a>
-<a class="sourceLine" id="cb16-9" data-line-number="9"><span class="co">## 497: 27.36756 27.36756 27.36756 -1.775579 0.0000000</span></a>
-<a class="sourceLine" id="cb16-10" data-line-number="10"><span class="co">## 498: 24.60780 24.60780 24.60780 -1.775579 0.0000000</span></a>
-<a class="sourceLine" id="cb16-11" data-line-number="11"><span class="co">## 499: 27.17043 27.17043 27.17043 -1.775579 0.0000000</span></a>
-<a class="sourceLine" id="cb16-12" data-line-number="12"><span class="co">## 500: 29.30595 29.30595 29.30595 -1.775579 0.0000000</span></a></code></pre></div>
-<div class="sourceCode" id="cb17"><pre class="r"><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="no">NEW</span>$<span class="no">ValidSc</span>)</pre></div>
-<div class="sourceCode" id="cb18"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="co">##       1stCode  1stScore   2ndScore   3rdScore  4thScore      logN</span></a>
-<a class="sourceLine" id="cb18-2" data-line-number="2"><span class="co">##   1: 71.72074 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000</span></a>
-<a class="sourceLine" id="cb18-3" data-line-number="3"><span class="co">##   2: 70.37372 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000</span></a>
-<a class="sourceLine" id="cb18-4" data-line-number="4"><span class="co">##   3: 14.94867  3.038376  2.0551266 -1.5326815 0.3128744 0.6931472</span></a>
-<a class="sourceLine" id="cb18-5" data-line-number="5"><span class="co">##   4: 33.80698 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000</span></a>
-<a class="sourceLine" id="cb18-6" data-line-number="6"><span class="co">##   5: 98.62834 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000</span></a>
-<a class="sourceLine" id="cb18-7" data-line-number="7"><span class="co">##  ---                                                             </span></a>
-<a class="sourceLine" id="cb18-8" data-line-number="8"><span class="co">## 496: 35.58111 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000</span></a>
-<a class="sourceLine" id="cb18-9" data-line-number="9"><span class="co">## 497: 27.36756 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000</span></a>
-<a class="sourceLine" id="cb18-10" data-line-number="10"><span class="co">## 498: 24.60780 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000</span></a>
-<a class="sourceLine" id="cb18-11" data-line-number="11"><span class="co">## 499: 27.17043 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000</span></a>
-<a class="sourceLine" id="cb18-12" data-line-number="12"><span class="co">## 500: 29.30595 -1.775579 -0.8076853 -0.1322494 0.0722702 0.0000000</span></a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">##  Named num [1:20600] 49.4 13.9 12.6 14.9 80.7 ...</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="co">##  - attr(*, "names")= chr [1:20600] "1" "2" "3" "4" ...</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span>(<span class="no">fu_valid</span>)</pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co">##  Named num [1:500] 71.7 70.4 14.9 33.8 98.6 ...</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co">##  - attr(*, "names")= chr [1:500] "90001" "90002" "90003" "90004" ...</span></a></code></pre></div>
+</div>
+</div>
+<div id="itensity-fpca" class="section level2">
+<h2 class="hasAnchor">
+<a href="#itensity-fpca" class="anchor"></a>Itensity FPCA</h2>
+<div class="sourceCode" id="cb8"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(<span class="no">ans</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/ifpca.html">ifpca</a></span>(<span class="no">time</span>, <span class="no">fu_train</span>, <span class="no">fu_valid</span>))</pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">##    user  system elapsed </span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">##   8.400   0.283   8.691</span></a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="r"><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="no">ans</span>$<span class="no">TrainFt</span>) <span class="co"># Extracted Features (Training) </span></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="co">##         1stCode        Pk       ChP    1stScore      logN</span></a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="co">##     1: 49.41273 49.412731 49.412731 -1.77557902 0.0000000</span></a>
+<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="co">##     2: 13.93018 13.930185 13.930185 -1.77557902 0.0000000</span></a>
+<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="co">##     3: 12.55031 12.550308 12.550308 -1.77557902 0.0000000</span></a>
+<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="co">##     4: 14.85010 14.850103 14.850103 -1.77557902 0.0000000</span></a>
+<a class="sourceLine" id="cb11-6" data-line-number="6"><span class="co">##     5: 80.65708 80.657084 80.657084 -1.77557902 0.0000000</span></a>
+<a class="sourceLine" id="cb11-7" data-line-number="7"><span class="co">##    ---                                                   </span></a>
+<a class="sourceLine" id="cb11-8" data-line-number="8"><span class="co">## 20596:  2.00000  3.750801  3.595729 -0.05899512 1.3862944</span></a>
+<a class="sourceLine" id="cb11-9" data-line-number="9"><span class="co">## 20597: 14.00000 14.359918 14.140123  0.71721892 0.6931472</span></a>
+<a class="sourceLine" id="cb11-10" data-line-number="10"><span class="co">## 20598:  8.00000  7.638604  7.434908 -1.32323471 1.0986123</span></a>
+<a class="sourceLine" id="cb11-11" data-line-number="11"><span class="co">## 20599: 13.00000 13.059548 12.711294 -1.36421318 1.0986123</span></a>
+<a class="sourceLine" id="cb11-12" data-line-number="12"><span class="co">## 20600: 23.00000 24.274004 23.841643  3.02440941 1.3862944</span></a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="r"><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="no">ans</span>$<span class="no">ValidFt</span>) <span class="co"># Extracted Features (Validation)</span></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="co">##       1stCode       Pk      ChP  1stScore      logN</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="co">##   1: 71.72074 71.72074 71.72074 -1.775579 0.0000000</span></a>
+<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="co">##   2: 70.37372 70.37372 70.37372 -1.775579 0.0000000</span></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4"><span class="co">##   3: 14.94867 14.01437 13.64066  3.038376 0.6931472</span></a>
+<a class="sourceLine" id="cb13-5" data-line-number="5"><span class="co">##   4: 33.80698 33.80698 33.80698 -1.775579 0.0000000</span></a>
+<a class="sourceLine" id="cb13-6" data-line-number="6"><span class="co">##   5: 98.62834 98.62834 98.62834 -1.775579 0.0000000</span></a>
+<a class="sourceLine" id="cb13-7" data-line-number="7"><span class="co">##  ---                                               </span></a>
+<a class="sourceLine" id="cb13-8" data-line-number="8"><span class="co">## 496: 35.58111 35.58111 35.58111 -1.775579 0.0000000</span></a>
+<a class="sourceLine" id="cb13-9" data-line-number="9"><span class="co">## 497: 27.36756 27.36756 27.36756 -1.775579 0.0000000</span></a>
+<a class="sourceLine" id="cb13-10" data-line-number="10"><span class="co">## 498: 24.60780 24.60780 24.60780 -1.775579 0.0000000</span></a>
+<a class="sourceLine" id="cb13-11" data-line-number="11"><span class="co">## 499: 27.17043 27.17043 27.17043 -1.775579 0.0000000</span></a>
+<a class="sourceLine" id="cb13-12" data-line-number="12"><span class="co">## 500: 29.30595 29.30595 29.30595 -1.775579 0.0000000</span></a></code></pre></div>
+</div>
+<div id="references" class="section level2">
+<h2 class="hasAnchor">
+<a href="#references" class="anchor"></a>References</h2>
+<ul>
+<li><p>Wu, S., Müller, H., Zhang, Z. (2013). <strong>Functional Data Analysis for Point Processes with Rare Events</strong>. <em>Statistica Sinica</em>, 23:1-23. <a href="https://doi.org/10.5705/ss.2010.162" class="uri">https://doi.org/10.5705/ss.2010.162</a></p></li>
+<li><p>Liang, L., Uno, H., Ma, Y., Cai, T. <strong>Robust Approach to Event Time Annotation Using Longitudinal Medical Encounters</strong>. <em>Working Paper</em>.</p></li>
+</ul>
+</div>
 </div>
   </div>
 
