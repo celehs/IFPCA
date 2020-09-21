@@ -92,12 +92,13 @@
 <div class="sourceCode" id="cb3"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">data.table</span>)</pre></div>
 <div class="sourceCode" id="cb4"><pre class="r"><span class="no">i</span> <span class="kw">&lt;-</span> <span class="fl">3</span> <span class="co"># 1, 2, 3 </span>
 <span class="co"># time for each code (training + validation)</span>
-<span class="no">time_code</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html">fread</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="st">"data-raw/time_code"</span>, <span class="no">i</span>, <span class="st">".csv"</span>))
+<span class="no">url</span> <span class="kw">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/celehs/IFPCA/master/data-raw/"</span>
+<span class="no">time_code</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html">fread</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="no">url</span>, <span class="st">"time_code"</span>, <span class="no">i</span>, <span class="st">".csv"</span>))
 <span class="no">time</span> <span class="kw">&lt;-</span> <span class="no">time_code</span>$<span class="no">month</span>
 <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">time</span>) <span class="kw">&lt;-</span> <span class="no">time_code</span>$<span class="no">id</span>
 <span class="co"># follow up time for training and validation sets</span>
-<span class="no">follow_up_train</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html">fread</a></span>(<span class="st">"data-raw/follow_up_train.csv"</span>)
-<span class="no">follow_up_valid</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html">fread</a></span>(<span class="st">"data-raw/follow_up_valid.csv"</span>)
+<span class="no">follow_up_train</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html">fread</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="no">url</span>, <span class="st">"follow_up_train.csv"</span>))
+<span class="no">follow_up_valid</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fread.html">fread</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span>(<span class="no">url</span>, <span class="st">"follow_up_valid.csv"</span>))
 <span class="no">fu_train</span> <span class="kw">&lt;-</span> <span class="no">follow_up_train</span>$<span class="no">fu_time</span>
 <span class="no">fu_valid</span> <span class="kw">&lt;-</span> <span class="no">follow_up_valid</span>$<span class="no">fu_time</span>
 <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span>(<span class="no">fu_train</span>) <span class="kw">&lt;-</span> <span class="no">follow_up_train</span>$<span class="no">id</span>
@@ -114,7 +115,7 @@
 <a href="#feature-extraction" class="anchor"></a>Feature Extraction</h3>
 <div class="sourceCode" id="cb8"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span>(<span class="no">ans</span> <span class="kw">&lt;-</span> <span class="fu"><a href="reference/ifpca.html">ifpca</a></span>(<span class="no">time</span>, <span class="no">fu_train</span>, <span class="no">fu_valid</span>))</pre></div>
 <div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">##    user  system elapsed </span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">##   8.402   0.299   8.705</span></a></code></pre></div>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">##   8.275   0.332   8.614</span></a></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="r"><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html">data.table</a></span>(<span class="no">ans</span>$<span class="no">TrainFt</span>) <span class="co"># Extracted Features (Training) </span></pre></div>
 <div class="sourceCode" id="cb11"><pre class="sourceCode R"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="co">##         1stCode        Pk       ChP    1stScore      logN</span></a>
 <a class="sourceLine" id="cb11-2" data-line-number="2"><span class="co">##     1: 49.41273 49.412731 49.412731 -1.77557902 0.0000000</span></a>

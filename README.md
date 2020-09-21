@@ -36,12 +36,13 @@ library(data.table)
 ``` r
 i <- 3 # 1, 2, 3 
 # time for each code (training + validation)
-time_code <- fread(paste0("data-raw/time_code", i, ".csv"))
+url <- "https://raw.githubusercontent.com/celehs/IFPCA/master/data-raw/"
+time_code <- fread(paste0(url, "time_code", i, ".csv"))
 time <- time_code$month
 names(time) <- time_code$id
 # follow up time for training and validation sets
-follow_up_train <- fread("data-raw/follow_up_train.csv")
-follow_up_valid <- fread("data-raw/follow_up_valid.csv")
+follow_up_train <- fread(paste0(url, "follow_up_train.csv"))
+follow_up_valid <- fread(paste0(url, "follow_up_valid.csv"))
 fu_train <- follow_up_train$fu_time
 fu_valid <- follow_up_valid$fu_time
 names(fu_train) <- follow_up_train$id
@@ -66,7 +67,7 @@ system.time(ans <- ifpca(time, fu_train, fu_valid))
 ```
 
     ##    user  system elapsed 
-    ##   8.402   0.299   8.705
+    ##   8.275   0.332   8.614
 
 ``` r
 data.table(ans$TrainFt) # Extracted Features (Training) 
