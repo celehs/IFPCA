@@ -3,20 +3,9 @@ title: "Intensity Functional Principal Component Analysis (IFPCA)"
 output: github_document
 ---
 
-## New Implementation
-
 ```{r}
-library(doParallel)
-```
-
-```{r}
-url <- "https://raw.githubusercontent.com/celehs/MASTA/master/R/"
-source(paste0(url, "masta-fpca-kern.R"))
-source(paste0(url, "masta-fpca-main.R"))
-source(paste0(url, "masta-fpca-ppic.R"))
-source(paste0(url, "masta-fpca-pred.R"))
-source("R/GetPK.R")
-source("R/IFPCA.R")
+library(IFPCA)
+library(data.table)
 ```
 
 ```{r}
@@ -25,7 +14,7 @@ i <- 3 # 1, 2, 3
 
 ```{r}
 # time for each code (training + validation)
-time_code <- readr::read_csv(paste0("data-raw/time_code", i, ".csv"))
+time_code <- fread(paste0("data-raw/time_code", i, ".csv"))
 time <- time_code$month
 names(time) <- time_code$id
 str(time)
@@ -33,8 +22,8 @@ str(time)
 
 ```{r}
 # follow up time for training and validation sets
-follow_up_train <- readr::read_csv("data-raw/follow_up_train.csv")
-follow_up_valid <- readr::read_csv("data-raw/follow_up_valid.csv")
+follow_up_train <- fread("data-raw/follow_up_train.csv")
+follow_up_valid <- fread("data-raw/follow_up_valid.csv")
 fu_train <- follow_up_train$fu_time
 fu_valid <- follow_up_valid$fu_time
 names(fu_train) <- follow_up_train$id
@@ -45,20 +34,14 @@ str(fu_valid)
 
 ```{r}
 system.time(NEW <- ifpca(time, fu_train, fu_valid))
-str(NEW)
-```
-
-## Old Implementation
-
-```{r}
-library(MASTA) 
 ```
 
 ```{r}
-system.time(OLD <- masta.fpca(data_org))
-str(OLD)
+data.table(NEW$TrainFt) # Features (Training Set)
+data.table(NEW$TrainSc)
 ```
 
 ```{r}
-proc.time()
+data.table(NEW$ValidFt) # Features (Validation Set)
+data.table(NEW$ValidSc)
 ```

@@ -34,18 +34,20 @@ ifpca <- function(time, fu_train, fu_valid,
   Tend <- 1.0
   as_int <- TRUE # FALSE
   names_time <- names(time)
+  count <- tapply(time, names_time, length) 
+  fu <- c(fu_train, fu_valid)
+  time_std <- time / fu[names_time]   
+  train <- names(fu_train) 
+  valid <- names(fu_valid) 
+  time_train <- time[names_time %in% train]
+  time_valid <- time[names_time %in% valid]
   names_time_train <- names(time_train)  
   names_time_valid <- names(time_valid)
   if (as_int) {
     names_time <- as.integer(names_time)
     names_time_train <- as.integer(names_time_train)
     names_time_valid <- as.integer(names_time_valid)
-  }
-  count <- tapply(time, names_time, length) 
-  fu <- c(fu_train, fu_valid)
-  time_std <- time / fu[names_time]   
-  train <- names(fu_train) 
-  valid <- names(fu_valid) 
+  }  
   count_train <- count[names(count) %in% train]
   count_valid <- count[names(count) %in% valid]
   count_train_all <- 0 * fu_train
@@ -53,7 +55,6 @@ ifpca <- function(time, fu_train, fu_valid,
   count_train_all[names(count_train)] <- count_train  
   count_valid_all[names(count_valid)] <- count_valid
   # TRAINING
-  time_train <- time[names_time %in% train]
   PKTS <- GetPK(
     id = names_time_train, ### INT/CHAR ### 
     t = time_train, 
@@ -63,9 +64,8 @@ ifpca <- function(time, fu_train, fu_valid,
   time1_train <- tapply(time_train, names_time_train, min) 
   h1 <- bw.nrd(time_std_train)
   h2 <- bw.nrd(time_std_train)^(5/6)
-  registerDoParallel(cores = parallel::detectCores()) ### TO BE DELETED ###  
   if (PPIC_K) {
-    tmp <- PP_FPCA_Parallel(
+    tmp <- PP_FPCA(
       time_std_train, 
       h1 = h1, 
       h2 = h2, 
@@ -74,10 +74,9 @@ ifpca <- function(time, fu_train, fu_valid,
       ngrid = n.grid, 
       Tend = Tend,
       K.select = "PPIC", 
-      derivatives = TRUE, 
-      nsubs = 4)
+      derivatives = TRUE)
   } else {
-    tmp <- PP_FPCA_Parallel(
+    tmp <- PP_FPCA(
       time_std_train, 
       h1 = h1, 
       h2 = h2, 
@@ -87,8 +86,7 @@ ifpca <- function(time, fu_train, fu_valid,
       Tend = Tend, 
       K.select = "PropVar", 
       propvar = propvar, 
-      derivatives = TRUE, 
-      nsubs = 4)
+      derivatives = TRUE)
   }      
   ft.e <- cbind(
     matrix(fu_train, nrow = length(fu_train), ncol = 3), 
@@ -117,7 +115,6 @@ ifpca <- function(time, fu_train, fu_valid,
   colnames(ft.e.S) <- c("1stCode", "1stScore", "2ndScore", "3rdScore", "4thScore", "logN")
   rownames(ft.e.S) <- rownames(ft.e) <- names(PKTS) <- train
   # VALIDATION
-  time_valid <- time[names_time %in% valid]
   PKTS2 <- GetPK(
     id = names_time_valid, ### INT/CHAR ### 
     t = time_valid, 

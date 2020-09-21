@@ -1,7 +1,7 @@
 Package: IFPCA
 Type: Package
 Title: Intensity Functional Principal Component Analysis (IFPCA)
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person("Liang", "Liang", role = "aut"),
     person("Hajime", "Uno", role = "aut"),
@@ -16,13 +16,9 @@ URL: https://github.com/celehs/IFPCA
 BugReports: https://github.com/celehs/IFPCA/issues
 Depends: 
     R (>= 3.0)
-Imports: 
-    doParallel,
-    foreach
 Suggests: 
     knitr,
-    rmarkdown,
-    DiagrammeR
+    rmarkdown
 VignetteBuilder: knitr
 NeedsCompilation: no
 LazyData: true
