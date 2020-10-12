@@ -22,7 +22,7 @@ GetPK <- function(id, t, tseq, fu) {
 
 #' @title Intensity Functional Principal Component Analysis (IFPCA)
 #' @description Performs IFPCA to extract features from longitudinal encounter data.
-#' @param time longitudinal encounter times
+#' @param time longitudinal encounter times. They should be greater than or equal to 1.
 #' @param fu_train follow-up time (training)
 #' @param fu_valid follow-up time (validation)
 #' @param PPIC_K a logical indicating whether you want to use Pseudo-Poisson Information Criterion to choose 
@@ -33,6 +33,33 @@ GetPK <- function(id, t, tseq, fu) {
 #' @export
 ifpca <- function(time, fu_train, fu_valid, 
                   PPIC_K = FALSE, n.grid = 401, propvar = 0.85) {
+  
+  #-----------------------
+  #----- data check ------
+  #-----------------------
+
+  #-1-- minimum in "time" should be greater than or equal to 1
+  if(!is.vector(time)) stop("Data Entry Issue: 'time' should be a vector")
+  chk=min(time)
+  if(chk < 1){
+    stop("Data Entry Issue: The minimum of 'time' should be 1. Please do not code Month 0 for Days 1 to 30 but Month 1.")
+  } 
+
+  #-2-- fu_train and fu_valid should be all vecotrs and one-record per subject and mutually exclusive
+  if(!is.vector(fu_train)) stop("Data Entry Issue: 'fu_train' should be a vector")
+  if(!is.vector(fu_valid)) stop("Data Entry Issue: 'fu_valid' should be a vector")
+  chk1=unique(names(fu_train))
+  chk2=unique(names(fu_valid))
+  if(length(fu_train)!=length(chk1)) stop("Data Entry Issue: More than one entry from one subject in 'fu_train'")
+  if(length(fu_valid)!=length(chk2)) stop("Data Entry Issue: More than one entry from one subject in 'fu_valid'")
+  chk3=c(names(fu_train),names(fu_valid))
+  if(length(chk3)!=length(unique(chk3))) stop("Data Entry Issue: There are subjects who are in both 'fu_train' and 'fu_valid'")
+  
+  #-3-- subjects in time should be embedded by fu_train or fu_valid
+  chk = match(names(time), c(names(fu_train),names(fu_valid)))
+  if(sum(is.na(chk3)!=0)) stop("Data Entry Issue: Some subjects in 'time' do not have follow-up time information in 'fu_train' or 'fu_valid'")
+  
+  #-----------------------
   Tend <- 1.0
   as_int <- TRUE # FALSE
   names_time <- names(time)
