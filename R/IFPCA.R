@@ -5,8 +5,10 @@ NULL
 
 VTM <- function(vc, dm) matrix(vc, ncol = length(vc), nrow = dm, byrow = TRUE)
 
-GetPK <- function(id, t, tseq, nn) {
-  PK <- rep(NA, nn)
+GetPK <- function(id, t, tseq, fu) {
+  id = as.character(id)
+  PK <- rep(NA, length(fu))
+  names(PK)=names(fu)
   e <- diff(tseq)
   aa <- tapply(t, id, FUN = function(t) {
     x <- hist(t, breaks = tseq, plot = FALSE)$counts
@@ -59,7 +61,7 @@ ifpca <- function(time, fu_train, fu_valid,
     id = names_time_train, ### INT/CHAR ### 
     t = time_train, 
     tseq = 0:floor(max(fu_train)), 
-    nn = length(fu_train))
+    fu = fu_train)
   time_std_train <- time_std[names(time_std) %in% train] 
   time1_train <- tapply(time_train, names_time_train, min) 
   h1 <- bw.nrd(time_std_train)
@@ -119,7 +121,7 @@ ifpca <- function(time, fu_train, fu_valid,
     id = names_time_valid, ### INT/CHAR ### 
     t = time_valid, 
     tseq = 0:floor(max(fu_valid)), 
-    nn = length(fu_valid))  
+    fu = fu_valid)  
   time_std_valid <- time_std[names(time_std) %in% valid]   
   time1_valid <- tapply(time_valid, names_time_valid, min)  
   tmp <- PP.FPCA.Pred(time_std_valid, count_valid, FPCA$mean, FPCA$basis, FPCA$K)
@@ -142,11 +144,11 @@ ifpca <- function(time, fu_train, fu_valid,
   colnames(ft.e.S2) <- c("1stCode", "1stScore", "2ndScore", "3rdScore", "4thScore", "logN")
   rownames(ft.e.S2) <- rownames(ft.e2) <- names(PKTS2) <- valid  
   list(
+#   FPCA = FPCA
     TrainFt = ft.e,
-    TrainSc = ft.e.S,
+#   TrainSc = ft.e.S,
     ValidFt = ft.e2,
-    ValidSc = ft.e.S2,
+#   ValidSc = ft.e.S2,
     TrainPK = PKTS,
-    ValidPK = PKTS2,
-    FPCA = FPCA)
+    ValidPK = PKTS2)
 }
