@@ -28,7 +28,8 @@ library(IFPCA)
 ### Data Preparation
 ```{r}
 url <- "https://raw.githubusercontent.com/celehs/IFPCA/master/data-raw/"
-follow_up_train <- fread(paste0(url, "follow_up_train.csv"))[1:600]
+#follow_up_train <- fread(paste0(url, "follow_up_train.csv"))[1:1000]
+follow_up_train <- fread(paste0(url, "follow_up_train.csv"))[1:600] #---- labeled data only
 follow_up_valid <- fread(paste0(url, "follow_up_valid.csv"))
 
 fu_train <- follow_up_train$fu_time
@@ -128,13 +129,22 @@ source(paste0(url,"masta-fit.R"))
 source(paste0(url,"masta-fit-bs-grplasso.R"))
 source(paste0(url,"masta-fit-npmle.R"))
 source(paste0(url,"masta-fit-cheng.R"))
+source(paste0(url,"MASTA.R"))
 ```
 
 
 ```{r}
+#-- This is gives an error with N=600 -- no unlabeled training data
+#-- "ht" becomes too small number <-100000
 b=masta.fit(Z, cov_group = NULL, thresh = 0.7, PCAthresh = 0.9, seed = 1234, seed2 = 100) 
 b
+```
 
+
+```{r}
+#-- This is equivalent to TrainN and ValidN are NULL (This works with N=600 -- no unlabeled training data)
+b=masta.fit(Z, cov_group = NULL, thresh = 1.0, PCAthresh = 0.9, seed = 1234, seed2 = 100) 
+b
 ```
 
 
