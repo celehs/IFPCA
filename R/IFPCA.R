@@ -57,7 +57,7 @@ ifpca <- function(time, fu_train, fu_valid,
   
   #-3-- subjects in time should be embedded by fu_train or fu_valid
   chk = match(names(time), c(names(fu_train),names(fu_valid)))
-  if(sum(is.na(chk3)!=0)) stop("Data Entry Issue: Some subjects in 'time' do not have follow-up time information in 'fu_train' or 'fu_valid'")
+  if(sum(is.na(chk)!=0)) stop("Data Entry Issue: Some subjects in 'time' do not have follow-up time information in 'fu_train' or 'fu_valid'")
   
   #-----------------------
   Tend <- 1.0
@@ -83,6 +83,14 @@ ifpca <- function(time, fu_train, fu_valid,
   count_valid_all <- 0 * fu_valid
   count_train_all[names(count_train)] <- count_train  
   count_valid_all[names(count_valid)] <- count_valid
+
+  #--- create TrainN and ValidN --- 
+  NN=rep(0,length(c(fu_train,fu_valid))) ; names(NN)=c(names(fu_train), names(fu_valid)) ; 
+  tmp=table(time) ; NN[names(tmp)]=tmp
+  TrainN=NN[names(fu_train)]
+  ValidN=NN[names(fu_valid)]
+  
+  
   # TRAINING
   PKTS <- GetPK(
     id = names_time_train, ### INT/CHAR ### 
@@ -172,6 +180,8 @@ ifpca <- function(time, fu_train, fu_valid,
   rownames(ft.e.S2) <- rownames(ft.e2) <- names(PKTS2) <- valid  
   list(
 #   FPCA = FPCA
+    TrainN = TrainN,
+    ValidN = ValidN,
     TrainFt = ft.e,
 #   TrainSc = ft.e.S,
     ValidFt = ft.e2,

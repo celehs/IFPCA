@@ -28,7 +28,8 @@ library(IFPCA)
 ### Data Preparation
 ```{r}
 url <- "https://raw.githubusercontent.com/celehs/IFPCA/master/data-raw/"
-follow_up_train <- fread(paste0(url, "follow_up_train.csv"))[1:600]
+#follow_up_train <- fread(paste0(url, "follow_up_train.csv"))[1:600]
+follow_up_train <- fread(paste0(url, "follow_up_train.csv"))
 follow_up_valid <- fread(paste0(url, "follow_up_valid.csv"))
 
 fu_train <- follow_up_train$fu_time
@@ -46,7 +47,6 @@ time <- time_code$month
 names(time) <- time_code$id
 D[[i]]=time
 }
-
 ```
 
 ### Run the 1st step (feature selection)
@@ -55,6 +55,8 @@ TrainFt = c()
 ValidFt = c()
 TrainPK = c()
 ValidPK = c()
+TrainN = c()
+ValidN = c()
 
 for (i in 1:length(D)){
  time=D[[i]]
@@ -64,18 +66,23 @@ for (i in 1:length(D)){
 Ft_name = colnames(ans$TrainFt) ; Ft_name = paste0(Ft_name,i) ; Ft_name ; colnames(ans$TrainFt) = Ft_name
 TrainFt = cbind(TrainFt,ans$TrainFt)
 Ft_name = colnames(ans$ValidFt) ; Ft_name = paste0(Ft_name,i) ; Ft_name ; colnames(ans$ValidFt) = Ft_name
-ValidFt = cbind(ValidFt,ans$ValidFt)
+ValidFt = cbind(ValidFt, ans$ValidFt)
 TrainPK = cbind(TrainPK, ans$TrainPK) 
 ValidPK = cbind(ValidPK, ans$ValidPK) 
+TrainN  = cbind(TrainN, ans$TrainN) 
+ValidN  = cbind(ValidN, ans$ValidN) 
 }
 
 colnames(TrainPK)=colnames(ValidPK) = paste0("pred",1:length(D)) 
+colnames(TrainN)=colnames(ValidN) = paste0("pred",1:length(D),"_total") 
 
 Z=list()
 Z$TrainFt = TrainFt
 Z$ValidFt = ValidFt
 Z$TrainPK = TrainPK
 Z$ValidPK = ValidPK
+Z$TrainN = TrainN
+Z$ValidN = ValidN
 ```
 
 ### Data preparation for the 2nd step (fitting)
