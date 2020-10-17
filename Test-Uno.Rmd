@@ -28,8 +28,7 @@ library(IFPCA)
 ### Data Preparation
 ```{r}
 url <- "https://raw.githubusercontent.com/celehs/IFPCA/master/data-raw/"
-#follow_up_train <- fread(paste0(url, "follow_up_train.csv"))[1:600]
-follow_up_train <- fread(paste0(url, "follow_up_train.csv"))
+follow_up_train <- fread(paste0(url, "follow_up_train.csv"))[1:600]
 follow_up_valid <- fread(paste0(url, "follow_up_valid.csv"))
 
 fu_train <- follow_up_train$fu_time
@@ -45,7 +44,8 @@ for (i in 1:number_of_codes){
 time_code <- fread(paste0(url, "time_code",i,".csv"))
 time <- time_code$month
 names(time) <- time_code$id
-D[[i]]=time
+idx = names(time) %in% c(names(fu_train),names(fu_valid))
+D[[i]]=time[idx]
 }
 ```
 
@@ -69,8 +69,11 @@ Ft_name = colnames(ans$ValidFt) ; Ft_name = paste0(Ft_name,i) ; Ft_name ; colnam
 ValidFt = cbind(ValidFt, ans$ValidFt)
 TrainPK = cbind(TrainPK, ans$TrainPK) 
 ValidPK = cbind(ValidPK, ans$ValidPK) 
-TrainN  = cbind(TrainN, ans$TrainN) 
-ValidN  = cbind(ValidN, ans$ValidN) 
+if(i ==1 ){ TrainN  = TrainN ; ValidN  = ValidN ;}
+if(i !=1 ){
+  TrainN  = cbind(TrainN, ans$TrainN[,2]) 
+  ValidN  = cbind(ValidN, ans$ValidN[,2]) 
+}
 }
 
 colnames(TrainPK)=colnames(ValidPK) = paste0("pred",1:length(D)) 

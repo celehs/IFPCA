@@ -86,10 +86,10 @@ ifpca <- function(time, fu_train, fu_valid,
 
   #--- create TrainN and ValidN --- 
   NN=rep(0,length(c(fu_train,fu_valid))) ; names(NN)=c(names(fu_train), names(fu_valid)) ; 
-  tmp=table(time) ; NN[names(tmp)]=tmp
-  TrainN=NN[names(fu_train)]
-  ValidN=NN[names(fu_valid)]
-  
+  tmp=table(names(time)) ; NN[names(tmp)]=tmp
+  TrainN=data.frame(id = as.character(names(fu_train)), pred_total=NN[names(fu_train)])
+  ValidN=data.frame(id = as.character(names(fu_valid)), pred_total=NN[names(fu_valid)])
+
   
   # TRAINING
   PKTS <- GetPK(
