@@ -28,8 +28,8 @@ library(IFPCA)
 ### Data Preparation
 ```{r}
 url <- "https://raw.githubusercontent.com/celehs/IFPCA/master/data-raw/"
-#follow_up_train <- fread(paste0(url, "follow_up_train.csv"))[1:1000]
-follow_up_train <- fread(paste0(url, "follow_up_train.csv"))[1:600] #---- labeled data only
+follow_up_train <- fread(paste0(url, "follow_up_train.csv"))[1:1000]
+#follow_up_train <- fread(paste0(url, "follow_up_train.csv"))[1:600] #---- labeled data only
 follow_up_valid <- fread(paste0(url, "follow_up_valid.csv"))
 
 fu_train <- follow_up_train$fu_time

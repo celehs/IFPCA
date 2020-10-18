@@ -182,11 +182,11 @@ ifpca <- function(time, fu_train, fu_valid,
 #   FPCA = FPCA
     TrainN = TrainN,
     ValidN = ValidN,
-    TrainFt = ft.e[row.names(ft.e) %in% names(fu_train),], #--- need to be labeled data only
-#   TrainSc = ft.e.S[row.names(ft.e.S) %in% names(fu_train),], #--- need to be labeled data only
+    TrainFt = ft.e,
+#   TrainSc = ft.e.S
     ValidFt = ft.e2,
 #   ValidSc = ft.e.S2,
-    TrainPK = PKTS[names(PKTS) %in% names(fu_train)], #--- need to be labeled data only
+    TrainPK = PKTS,
     ValidPK = PKTS2)
 }
 
