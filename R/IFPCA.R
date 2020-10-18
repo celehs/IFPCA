@@ -59,7 +59,7 @@ ifpca <- function(time, fu_train, fu_valid,
   chk = match(names(time), c(names(fu_train),names(fu_valid)))
   if(sum(is.na(chk)!=0)) stop("Data Entry Issue: Some subjects in 'time' do not have follow-up time information in 'fu_train' or 'fu_valid'")
   
-  #-----------------------
+  #--- standardized version ---
   Tend <- 1.0
   as_int <- TRUE # FALSE
   names_time <- names(time)
@@ -182,10 +182,10 @@ ifpca <- function(time, fu_train, fu_valid,
 #   FPCA = FPCA
     TrainN = TrainN,
     ValidN = ValidN,
-    TrainFt = ft.e,
-#   TrainSc = ft.e.S,
+    TrainFt = ft.e[row.names(ft.e) %in% names(fu_train),], #--- need to be labeled data only
+#   TrainSc = ft.e.S[row.names(ft.e.S) %in% names(fu_train),], #--- need to be labeled data only
     ValidFt = ft.e2,
 #   ValidSc = ft.e.S2,
-    TrainPK = PKTS,
+    TrainPK = PKTS[row.names(PKTS) %in% names(fu_train),], #--- need to be labeled data only
     ValidPK = PKTS2)
 }
