@@ -151,6 +151,7 @@ ifpca <- function(time, fu_train, fu_valid,
   colnames(ft.e) <- c("1stCode", "Pk", "ChP", "1stScore", "logN")
   colnames(ft.e.S) <- c("1stCode", "1stScore", "2ndScore", "3rdScore", "4thScore", "logN")
   rownames(ft.e.S) <- rownames(ft.e) <- names(PKTS) <- train
+  
   # VALIDATION
   PKTS2 <- GetPK(
     id = names_time_valid, ### INT/CHAR ### 
@@ -166,6 +167,7 @@ ifpca <- function(time, fu_train, fu_valid,
     -tmp$baseline[1], log(1 + count_valid_all))
   pos <- count_valid_all > 0  
   locm <- unlist(apply(tmp$densities[, 1:sum(pos) + 1], 2, which.max))  
+  locm = pmin(locm, nrow(tmp$derivatives))
   ft.e2[pos, 2] <- ft.e2[pos, 2] * tmp$densities[locm, 1]
   ft.e2[pos, 3] <- ft.e2[pos, 3] * tmp$derivatives[
     sapply(1:sum(pos), function(i) {
