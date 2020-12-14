@@ -166,7 +166,8 @@ ifpca <- function(time, fu_train, fu_valid,
     matrix(fu_valid, nrow = length(fu_valid), ncol = 3), 
     -tmp$baseline[1], log(1 + count_valid_all))
   pos <- count_valid_all > 0  
-  locm <- unlist(apply(tmp$densities[, 1:sum(pos) + 1], 2, which.max))  
+  locm <- unlist(apply(tmp$densities[, 1:sum(pos) + 1], 2, which.max)) 
+  #-- just patch ( will come back to PP.FPCA.Pred later
   locm = pmin(locm, nrow(tmp$derivatives))
   ft.e2[pos, 2] <- ft.e2[pos, 2] * tmp$densities[locm, 1]
   ft.e2[pos, 3] <- ft.e2[pos, 3] * tmp$derivatives[
